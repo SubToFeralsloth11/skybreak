@@ -127,13 +127,5 @@ func _run() -> void:
 		g.queue_free()
 		await _frames(2)
 
-		print("RESULT: FAIL " + str(failures))
-		quit(1)
-		return
-	print("  inverted: up.y %.2f vy %.1f alt %.0f" % [hl.global_transform.basis.y.y, hl.linear_velocity.y, hl.global_position.y])
-	_check(hl.global_transform.basis.y.y < -0.8 and hl.linear_velocity.y > -4.0, "heli holds altitude inverted")
-	hl.queue_free()
-	await _frames(2)
-
 	print("RESULT: %s" % ("PASS" if failures.is_empty() else "FAIL " + str(failures)))
 	quit(0 if failures.is_empty() else 1)

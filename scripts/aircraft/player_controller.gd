@@ -109,6 +109,12 @@ func _physics_process(dt: float) -> void:
 		ac.input_pitch *= absf(ac.input_pitch)
 		ac.input_roll *= absf(ac.input_roll)
 		ac.input_yaw *= absf(ac.input_yaw) * 0.8 + 0.2
+		# Arrow keys: fly forward/back. Nose tilts to a set angle and the rotor pulls you along.
+		var drive := float(Input.is_physical_key_pressed(KEY_UP)) - float(Input.is_physical_key_pressed(KEY_DOWN))
+		ac.heli_drive = move_toward(ac.heli_drive, drive, dt * 1.5)
+		if drive != 0.0:
+			var want_pitch := deg_to_rad(-22.0 * drive)
+			ac.input_pitch = clampf((want_pitch - ac.pitch_angle()) * 2.5 - ac.angular_velocity.dot(ac.global_transform.basis.x) * 0.6, -1.0, 1.0)
 	var thr_rate := (0.6 if ac.spec.has("heli") else 0.45) * dt
 	if Input.is_action_pressed("throttle_up"):
 		var cap := 1.1 if ac.spec.has_afterburner else 1.0

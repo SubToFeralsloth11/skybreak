@@ -34,6 +34,7 @@ var gear_down := true
 var fire_gun := false
 var fbw_override := false
 var collective := 0.0 # helicopters: -1..1 blade pitch, from throttle
+var heli_drive := 0.0 # helicopters: -1..1 arrow-key forward/back assist
 
 # ---- state (read by HUD, AI, modes)
 var alive := true
@@ -552,6 +553,10 @@ func _heli_forces(state: PhysicsDirectBodyState3D, dt: float, b: Basis, bt: Basi
 	acc.z += -lv.z * 0.002 * auth
 	var tq := Vector3(acc.x * inertia.x, acc.y * inertia.y, acc.z * inertia.z)
 	state.apply_torque(b * tq)
+	# Arrow-key drive: level push along the heading, plus lift so speeding up doesn't sink you.
+	if absf(heli_drive) > 0.01 and auth > 0.0:
+		var flat := Vector3(-b.z.x, 0.0, -b.z.z).normalized()
+		state.apply_force((flat * heli_drive * 0.9 + Vector3.UP * absf(heli_drive) * 0.12) * mass * G * auth, com_off)
 	aileron = input_roll
 	elevator = input_pitch
 	rudder = input_yaw
