@@ -122,7 +122,7 @@ static func _heli() -> Dictionary:
 			"collective_min": -0.75, # negative pitch: hover inverted
 			"pitch_rate_deg": 85.0, "roll_rate_deg": 110.0, "yaw_rate_deg": 70.0,
 			"response": 3.5, # how hard the rotor chases the commanded rate (1/s): softer = heavier, smoother
-			"drag_area": Vector3(9.0, 15.0, 4.0), # side, vertical (disc), frontal (m²)
+			"drag_area": Vector3(7.0, 6.0, 2.2), # side, vertical (disc), frontal (m²)
 		},
 		"mass": 1400.0,
 		"inertia": Vector3(2600.0, 3200.0, 1300.0),

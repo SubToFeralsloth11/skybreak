@@ -72,5 +72,18 @@ func _run() -> void:
 	hl.queue_free()
 	await _frames(2)
 
+	var fw := _spawn("heli")
+	await _frames(2)
+	fw.place_in_air(Transform3D(Basis.IDENTITY, Vector3(0, 400, 0)), 0.0)
+	fw.heli_drive = 1.0
+	var t5 := 0.0
+	for i in 120 * 20:
+		await physics_frame
+		fw.input_pitch = clampf((deg_to_rad(-38.0) - fw.pitch_angle()) * 2.5 - fw.angular_velocity.dot(fw.global_transform.basis.x) * 0.6, -1.0, 1.0)
+		if i == 600:
+			t5 = fw.airspeed
+	print("  forward: 5s %.0f m/s, 20s %.0f m/s, alt %.0f" % [t5, fw.airspeed, fw.global_position.y])
+	_check(fw.airspeed > 60.0 and absf(fw.global_position.y - 400.0) < 120.0, "heli reaches speed and holds height")
+
 	print("RESULT: %s" % ("PASS" if failures.is_empty() else "FAIL " + str(failures)))
 	quit(0 if failures.is_empty() else 1)

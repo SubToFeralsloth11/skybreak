@@ -553,10 +553,11 @@ func _heli_forces(state: PhysicsDirectBodyState3D, dt: float, b: Basis, bt: Basi
 	acc.z += -lv.z * 0.002 * auth
 	var tq := Vector3(acc.x * inertia.x, acc.y * inertia.y, acc.z * inertia.z)
 	state.apply_torque(b * tq)
-	# Arrow-key drive: level push along the heading, plus lift so speeding up doesn't sink you.
+	# Arrow-key drive: the rotor adds collective to hold height while tilted, so the tilted thrust
+	# vector (not a magic push) is what accelerates you - steeper tilt, more speed.
 	if absf(heli_drive) > 0.01 and auth > 0.0:
-		var flat := Vector3(-b.z.x, 0.0, -b.z.z).normalized()
-		state.apply_force((flat * heli_drive * 0.9 + Vector3.UP * absf(heli_drive) * 0.12) * mass * G * auth, com_off)
+		var tilt_comp := (1.0 / clampf(b.y.y, 0.55, 1.0) - 1.0) * 1.25 + 0.15
+		state.apply_force(b.y * tilt_comp * absf(heli_drive) * mass * G * auth, com_off)
 	aileron = input_roll
 	elevator = input_pitch
 	rudder = input_yaw
